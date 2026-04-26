@@ -4,6 +4,8 @@ import university.enums.DegreeType;
 import university.enums.Language;
 import university.exceptions.LowHIndexException;
 import university.interfaces.Researcher;
+import university.models.research.ResearchPaper;
+import university.models.research.ResearchProject;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
@@ -11,9 +13,9 @@ import java.util.List;
 public class GraduateStudent extends Student implements Researcher {
     private DegreeType degree;
     private Researcher supervisor;
-    private List<Object> thesisPapers;
-    private List<Object> papers;
-    private List<Object> projects;
+    private List<ResearchPaper> thesisPapers;
+    private List<ResearchPaper> papers;
+    private List<ResearchProject> projects;
 
     public GraduateStudent(int id, String firstName, String lastName, String login, String password, Language language, int year, String major, DegreeType degree) {
         super(id, firstName, lastName, login, password, language, year, major);
@@ -31,38 +33,40 @@ public class GraduateStudent extends Student implements Researcher {
         this.supervisor = supervisor;
     }
 
-    public void addThesisPaper(Object paper) {
+    public void addThesisPaper(ResearchPaper paper) {
         thesisPapers.add(paper);
         papers.add(paper);
-        System.out.println(getFirstName() + " added thesis paper");
     }
 
     @Override
     public int calculateHIndex() {
-        int h = 0;
-        return h;
+        return 0;
     }
 
     @Override
-    public void printPapers(Comparator c) {
-        System.out.println("Papers of " + getFirstName() + ": " + papers);
+    public void printPapers(Comparator<ResearchPaper> c) {
+        // логика в ResearchService
     }
 
     @Override
-    public void addPaper(Object paper) {
+    public void addPaper(ResearchPaper paper) {
         papers.add(paper);
     }
 
     @Override
-    public List getPapers() { return papers; }
+    public List<ResearchPaper> getPapers() { return papers; }
 
     @Override
-    public List getProjects() { return projects; }
+    public List<ResearchProject> getProjects() { return projects; }
 
     @Override
     public String getInfo() {
         return "GraduateStudent: " + getFirstName() + " " + getLastName() + ", Degree: " + degree;
     }
 
+    @Override
+    public String toString() { return getInfo(); }
+
     public DegreeType getDegree() { return degree; }
+    public List<ResearchPaper> getThesisPapers() { return thesisPapers; }
 }

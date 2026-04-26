@@ -1,17 +1,15 @@
 ﻿package university.models.users;
 
+import university.enums.Language;
+
 public abstract class Employee extends User {
     private double salary;
     private String department;
 
-    public Employee(int id, String firstName, String lastName, String login, String password, university.enums.Language language, double salary, String department) {
+    public Employee(int id, String firstName, String lastName, String login, String password, Language language, double salary, String department) {
         super(id, firstName, lastName, login, password, language);
         this.salary = salary;
         this.department = department;
-    }
-
-    public void sendMessage(Employee to, String text) {
-        System.out.println("Message from " + getFirstName() + " to " + to.getFirstName() + ": " + text);
     }
 
     @Override

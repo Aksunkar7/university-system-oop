@@ -1,8 +1,6 @@
 ﻿package university.models.users;
 
 import university.enums.Language;
-import university.exceptions.CreditLimitException;
-import university.exceptions.FailLimitException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -12,7 +10,8 @@ public class Student extends User implements Comparable<Student> {
     private int failCount;
     private int year;
     private String major;
-    private List<String> courses;
+    private List<Object> courses;
+    private List<Object> marks;
 
     public Student(int id, String firstName, String lastName, String login, String password, Language language, int year, String major) {
         super(id, firstName, lastName, login, password, language);
@@ -22,38 +21,7 @@ public class Student extends User implements Comparable<Student> {
         this.credits = 0;
         this.failCount = 0;
         this.courses = new ArrayList<>();
-    }
-
-    public void registerCourse(String course, int courseCredits) throws CreditLimitException, FailLimitException {
-        if (failCount >= 3) throw new FailLimitException("Student exceeded fail limit");
-        if (credits + courseCredits > 21) throw new CreditLimitException("Credit limit exceeded: max 21");
-        courses.add(course);
-        credits += courseCredits;
-        System.out.println(getFirstName() + " registered for " + course);
-    }
-
-    public void viewMarks() {
-        System.out.println("Viewing marks for " + getFirstName());
-    }
-
-    public String getTranscript() {
-        return "Transcript of " + getFirstName() + " " + getLastName() + ", GPA: " + gpa;
-    }
-
-    public void rateTeacher(String teacher, double rating) {
-        System.out.println(getFirstName() + " rated " + teacher + ": " + rating);
-    }
-
-    public void viewCourses() {
-        System.out.println("Courses: " + courses);
-    }
-
-    public void viewAttendance() {
-        System.out.println("Viewing attendance for " + getFirstName());
-    }
-
-    public void viewSchedule() {
-        System.out.println("Viewing schedule for " + getFirstName());
+        this.marks = new ArrayList<>();
     }
 
     @Override
@@ -66,11 +34,21 @@ public class Student extends User implements Comparable<Student> {
         return "Student: " + getFirstName() + " " + getLastName() + ", GPA: " + gpa + ", Credits: " + credits;
     }
 
+    @Override
+    public String toString() {
+        return getInfo();
+    }
+
     public double getGpa() { return gpa; }
     public int getCredits() { return credits; }
     public int getFailCount() { return failCount; }
     public int getYear() { return year; }
     public String getMajor() { return major; }
+    public List<Object> getCourses() { return courses; }
+    public List<Object> getMarks() { return marks; }
     public void setGpa(double gpa) { this.gpa = gpa; }
+    public void setCredits(int credits) { this.credits = credits; }
     public void setFailCount(int failCount) { this.failCount = failCount; }
+    public void setYear(int year) { this.year = year; }
+    public void setMajor(String major) { this.major = major; }
 }

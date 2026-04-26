@@ -20,17 +20,7 @@ public abstract class User implements Serializable {
         this.language = language;
     }
 
-    public void login() {
-        System.out.println(firstName + " logged in");
-    }
-
-    public void logout() {
-        System.out.println(firstName + " logged out");
-    }
-
-    public String getInfo() {
-        return "User: " + firstName + " " + lastName;
-    }
+    public abstract String getInfo();
 
     @Override
     public boolean equals(Object obj) {
