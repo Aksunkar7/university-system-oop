@@ -1,6 +1,5 @@
 # university-system-oop
-
-
+```
 university-system-oop/
 ├── src/
 │   └── main/
@@ -58,3 +57,4 @@ university-system-oop/
 │               └── Main.java
 ├── README.md
 └── .gitignore
+```
