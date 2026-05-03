@@ -13,7 +13,7 @@ public class CourseService {
 
     private DataStorage db = DataStorage.getInstance();
 
-
+    // Schedule и Attendance нет в DataStorage — храним локально
     private List<Schedule> schedules = new ArrayList<>();
     private List<Attendance> attendances = new ArrayList<>();
 
@@ -40,7 +40,9 @@ public class CourseService {
         enrollment.addStudent(s);
         return enrollment;
     }
-     // Выставление оценки студенту
+
+
+    // Выставление оценки студенту.
 
     public Mark putMark(Student s, Course c, double att1, double att2, double finalMark) {
         Mark mark = new Mark(s, c, att1, att2, finalMark);
@@ -56,7 +58,7 @@ public class CourseService {
     }
 
 
-     // Назначение учителя на курс
+     // Назначение учителя на курс.
 
     public void assignTeacherToCourse(Teacher t, Course c) {
         EnrollmentCourse enrollment = findEnrollment(c);
@@ -70,7 +72,7 @@ public class CourseService {
     }
 
 
-     // Генерация расписания.
+    // Генерация расписания.
 
     public Schedule generateSchedule(Course c, Room r) {
         Teacher assignedTeacher = null;
@@ -94,7 +96,7 @@ public class CourseService {
     }
 
 
-     // Транскрипт студента.
+    // Транскрипт студента.
 
     public String getTranscript(Student s) {
         StringBuilder sb = new StringBuilder();
@@ -154,7 +156,7 @@ public class CourseService {
     }
 
 
-     // Одобрить курс для регистрации.
+    // Одобрить курс для регистрации.
 
     public void approveCourseRegistration(Course c) {
         db.getCourses().add(c);
@@ -162,7 +164,7 @@ public class CourseService {
     }
 
 
-     // Добавить курс для регистрации (если ещё нет).
+    // Добавить курс для регистрации (если ещё нет).
 
     public void addCourseForRegistration(Course c) {
         if (!db.getCourses().contains(c)) {
@@ -172,12 +174,40 @@ public class CourseService {
     }
 
 
+
     private EnrollmentCourse findEnrollment(Course c) {
         for (Object obj : db.getEnrollments()) {
             EnrollmentCourse ec = (EnrollmentCourse) obj;
             if (ec.getCourse().getId() == c.getId()) return ec;
         }
         return null;
+    }
+
+
+    // Просмотр расписания студента — все курсы на которые он записан.
+
+    public List<Schedule> getScheduleForStudent(Student s) {
+        List<Schedule> result = new ArrayList<>();
+        for (Schedule sch : schedules) {
+            EnrollmentCourse ec = findEnrollment(sch.getCourse());
+            if (ec != null && ec.getStudents().contains(s)) {
+                result.add(sch);
+            }
+        }
+        return result;
+    }
+
+
+    // Просмотр расписания по конкретному курсу.
+
+    public List<Schedule> getScheduleForCourse(Course c) {
+        List<Schedule> result = new ArrayList<>();
+        for (Schedule sch : schedules) {
+            if (sch.getCourse().getId() == c.getId()) {
+                result.add(sch);
+            }
+        }
+        return result;
     }
 
     public List<Schedule> getSchedules() { return schedules; }
