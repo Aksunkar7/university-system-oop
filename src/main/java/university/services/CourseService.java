@@ -13,7 +13,7 @@ public class CourseService {
 
     private DataStorage db = DataStorage.getInstance();
 
-    // Schedule и Attendance нет в DataStorage — храним локально
+  
     private List<Schedule> schedules = new ArrayList<>();
     private List<Attendance> attendances = new ArrayList<>();
 
