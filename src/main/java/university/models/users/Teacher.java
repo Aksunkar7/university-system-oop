@@ -3,7 +3,6 @@ package university.models.users;
 import university.enums.Language;
 import university.enums.TeacherPosition;
 import university.models.course.Course;
-import university.models.course.Mark;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -29,10 +28,6 @@ public class Teacher extends Employee implements Comparable<Teacher> {
     public double getRating() { return rating; }
     public void setRating(double rating) { this.rating = rating; }
     public void addCourse(Course course) { this.courses.add(course); }
-
-    public List<Course> viewCourses() {
-        return courses;
-    }
 
     @Override
     public String getInfo() {

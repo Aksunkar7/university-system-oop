@@ -171,7 +171,7 @@ public class CourseService {
         }
     }
 
-    
+
     private EnrollmentCourse findEnrollment(Course c) {
         for (Object obj : db.getEnrollments()) {
             EnrollmentCourse ec = (EnrollmentCourse) obj;
