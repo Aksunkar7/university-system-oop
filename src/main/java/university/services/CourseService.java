@@ -14,10 +14,8 @@ public class CourseService {
     private List<Schedule> schedules = new ArrayList<>();
     private List<Attendance> attendances = new ArrayList<>();
 
-    /**
-     * Регистрация студента на курс.
-     * Проверяет: credits <= 21, failCount <= 3
-     */
+
+     // Проверяет: credits <= 21, failCount <= 3
     public EnrollmentCourse registerStudentToCourse(Student s, Course c) throws Exception {
         // Проверка кредитного лимита
         int totalAfterEnroll = s.getCredits() + c.getCredits();
@@ -33,7 +31,7 @@ public class CourseService {
                     s.getFirstName() + " has " + s.getFailCount() + " fails (max: 3)");
         }
 
-        // Найти или создать EnrollmentCourse для этого курса
+
         EnrollmentCourse enrollment = findEnrollment(c);
         if (enrollment == null) {
             enrollment = new EnrollmentCourse(c, null);
@@ -44,10 +42,8 @@ public class CourseService {
         return enrollment;
     }
 
-    /**
-     * Выставление оценки студенту.
-     * Создаёт Mark и добавляет в EnrollmentCourse.
-     */
+
+     // Создаёт Mark и добавляет в EnrollmentCourse.
     public Mark putMark(Student s, Course c, double att1, double att2, double finalMark) {
         Mark mark = new Mark(s, c, att1, att2, finalMark);
 
@@ -61,9 +57,6 @@ public class CourseService {
         return mark;
     }
 
-    /**
-     * Назначение учителя на курс.
-     */
     public void assignTeacherToCourse(Teacher t, Course c) {
         EnrollmentCourse enrollment = findEnrollment(c);
         if (enrollment == null) {
@@ -75,9 +68,7 @@ public class CourseService {
         t.addCourse(c);
     }
 
-    /**
-     * Генерация расписания для курса и аудитории.
-     */
+
     public Schedule generateSchedule(Course c, Room r) {
         // Находим назначенного учителя если есть
         Teacher assignedTeacher = null;
@@ -91,18 +82,14 @@ public class CourseService {
         return schedule;
     }
 
-    /**
-     * Отметка посещаемости студента.
-     */
+
     public Attendance markAttendance(Student s, Course c, boolean isPresent) {
         Attendance attendance = new Attendance(s, c, new Date(), isPresent);
         attendances.add(attendance);
         return attendance;
     }
 
-    /**
-     * Транскрипт студента — все его оценки по всем курсам.
-     */
+
     public String getTranscript(Student s) {
         StringBuilder sb = new StringBuilder();
         sb.append("========================================\n");
@@ -132,9 +119,9 @@ public class CourseService {
         return sb.toString();
     }
 
-    /**
-     * Отчёт учителя по курсу.
-     */
+    
+     // Отчёт учителя по курсу.
+
     public String generateReport(Teacher t, Course c) {
         StringBuilder sb = new StringBuilder();
         sb.append("========================================\n");
