@@ -36,11 +36,11 @@ public class StudentOrganization {
     }
 
 
-    public String getName()              { return name; }
-    public Student getHead()             { return head; }
-    public List<Student> getMembers()    { return Collections.unmodifiableList(members); }
+    public String getName() { return name; }
+    public Student getHead() { return head; }
+    public List<Student> getMembers() { return Collections.unmodifiableList(members); }
 
-    public void setName(String name)     { this.name = Objects.requireNonNull(name); }
+    public void setName(String name) { this.name = Objects.requireNonNull(name); }
 
 
     public void setHead(Student newHead) {
