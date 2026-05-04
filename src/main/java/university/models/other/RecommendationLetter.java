@@ -13,14 +13,14 @@ public class RecommendationLetter {
     private final Date date;
 
     public RecommendationLetter(Teacher author, Student recipient, String content) {
-        this.author    = Objects.requireNonNull(author,    "Author cannot be null");
+        this.author = Objects.requireNonNull(author,    "Author cannot be null");
         this.recipient = Objects.requireNonNull(recipient, "Recipient cannot be null");
 
         if (content == null || content.isBlank()) {
             throw new IllegalArgumentException("Letter content cannot be blank");
         }
         this.content = content;
-        this.date    = new Date();
+        this.date = new Date();
     }
 
     @Override
@@ -34,15 +34,15 @@ public class RecommendationLetter {
                         "%s%n" +
                         "============================",
                 date,
-                author.getFirstName(),    author.getLastName(),    author.getPosition(),
+                author.getFirstName(), author.getLastName(), author.getPosition(),
                 recipient.getFirstName(), recipient.getLastName(),
                 content
         );
     }
 
-    public Teacher getAuthor()        { return author; }
-    public Student getRecipient()     { return recipient; }
-    public String  getContent()       { return content; }
-    public Date    getDate()          { return new Date(date.getTime()); }
+    public Teacher getAuthor() { return author; }
+    public Student getRecipient() { return recipient; }
+    public String  getContent() { return content; }
+    public Date  getDate() { return new Date(date.getTime()); }
 
 }

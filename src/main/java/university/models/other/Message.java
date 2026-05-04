@@ -33,8 +33,8 @@ public class Message {
         );
     }
 
-    public Employee getFrom()    { return from; }
-    public Employee getTo()      { return to; }
+    public Employee getFrom() { return from; }
+    public Employee getTo() { return to; }
     public String getContent() { return content; }
-    public Date getDate()    { return new Date(date.getTime()); } // defensive copy
+    public Date getDate() { return new Date(date.getTime()); } // defensive copy
 }

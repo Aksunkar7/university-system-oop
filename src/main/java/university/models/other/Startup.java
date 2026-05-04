@@ -32,12 +32,12 @@ public class Startup {
         );
     }
 
-    public String getName()              { return name; }
-    public Student getFounder()          { return founder; }           // immutable, no setter
-    public String getDescription()       { return description; }
-    public List<Student> getMembers()    { return Collections.unmodifiableList(members); }
+    public String getName() { return name; }
+    public Student getFounder() { return founder; }           // immutable, no setter
+    public String getDescription() { return description; }
+    public List<Student> getMembers() { return Collections.unmodifiableList(members); }
 
-    public void setName(String name)           { this.name        = Objects.requireNonNull(name); }
-    public void setDescription(String desc)    { this.description = Objects.requireNonNull(desc); }
+    public void setName(String name) { this.name        = Objects.requireNonNull(name); }
+    public void setDescription(String desc) { this.description = Objects.requireNonNull(desc); }
 
 }

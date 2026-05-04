@@ -27,8 +27,8 @@ public class ResearchPaper implements Comparable<ResearchPaper>{
         this(title);
         this.authors = new ArrayList<>(authors);
         this.journal = journal;
-        this.date    = date;
-        this.doi     = doi;
+        this.date = date;
+        this.doi = doi;
         setPages(pages); // uses validated setter
     }
 
@@ -62,17 +62,17 @@ public class ResearchPaper implements Comparable<ResearchPaper>{
                 title, authors, journal, citations);
     }
 
-    public String getTitle()              { return title; }
-    public List<String> getAuthors()      { return new ArrayList<>(authors); } // defensive copy
-    public String getJournal()            { return journal; }
-    public Date getDate()                 { return new Date(date.getTime()); }  // defensive copy
-    public int getCitations()             { return citations; }
-    public String getDoi()                { return doi; }
-    public int getPages()                 { return pages; }
+    public String getTitle() { return title; }
+    public List<String> getAuthors() { return new ArrayList<>(authors); } // defensive copy
+    public String getJournal() { return journal; }
+    public Date getDate() { return new Date(date.getTime()); }  // defensive copy
+    public int getCitations() { return citations; }
+    public String getDoi() { return doi; }
+    public int getPages() { return pages; }
 
-    public void setJournal(String journal)       { this.journal = journal; }
-    public void setDate(Date date)               { this.date = new Date(date.getTime()); }
-    public void setDoi(String doi)               { this.doi = doi; }
+    public void setJournal(String journal) { this.journal = journal; }
+    public void setDate(Date date) { this.date = new Date(date.getTime()); }
+    public void setDoi(String doi) { this.doi = doi; }
 
     public void setCitations(int citations) {
         if (citations < 0) throw new IllegalArgumentException("Citations cannot be negative");
