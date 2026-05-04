@@ -10,6 +10,10 @@ import java.util.Comparator;
 
 
 public class ResearchService {
+    private Comparator<ResearchPaper> c;
+
+//    public ResearchService(){}
+
 
     public void publishPaper(Researcher r, ResearchPaper paper) {
     }
@@ -18,6 +22,7 @@ public class ResearchService {
         return 0;
     }
 
+    // Strategy pattern
     public void printPapers(Researcher r, Comparator<ResearchPaper> c) {
     }
 

@@ -43,10 +43,9 @@ public class CourseService {
 
 
     // Выставление оценки студенту.
-
+    // To fix logic
     public Mark putMark(Student s, Course c, double att1, double att2, double finalMark) {
         Mark mark = new Mark(s, c, att1, att2, finalMark);
-
         EnrollmentCourse enrollment = findEnrollment(c);
         if (enrollment == null) {
             enrollment = new EnrollmentCourse(c, null);
@@ -59,7 +58,6 @@ public class CourseService {
 
 
      // Назначение учителя на курс.
-
     public void assignTeacherToCourse(Teacher t, Course c) {
         EnrollmentCourse enrollment = findEnrollment(c);
         if (enrollment == null) {
