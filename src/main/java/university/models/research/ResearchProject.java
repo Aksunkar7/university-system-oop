@@ -1,4 +1,4 @@
-﻿package university.models.research;
+package university.models.research;
 
 import university.interfaces.Researcher;
 
@@ -42,5 +42,12 @@ public class ResearchProject {
                 "ResearchProject{topic='%s', participants=%d, papers=%d, totalCitations=%d}",
                 topic, participants.size(), papers.size(), getTotalCitations()
         );
+    }
+    public void addParticipant(Researcher r) {
+        participants.add(r);
+    }
+
+    public void addPaper(ResearchPaper p) {
+        papers.add(p);
     }
 }

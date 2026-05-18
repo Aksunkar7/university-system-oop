@@ -1,2 +1,2 @@
-﻿package university.enums;
+package university.enums;
 public enum TeacherPosition { TUTOR, LECTOR, SENIOR_LECTOR, PROFESSOR }

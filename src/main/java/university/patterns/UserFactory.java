@@ -1,4 +1,4 @@
-﻿package university.patterns;
+package university.patterns;
 
 import university.enums.Language;
 import university.enums.ManagerType;
