@@ -65,11 +65,4 @@ public class ResearchProject {
                 topic, participants.size(), papers.size(), getTotalCitations()
         );
     }
-    public void addParticipant(Researcher r) {
-        participants.add(r);
-    }
-
-    public void addPaper(ResearchPaper p) {
-        papers.add(p);
-    }
 }

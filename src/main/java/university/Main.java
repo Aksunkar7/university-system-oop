@@ -21,8 +21,8 @@ public class Main {
     static AuthService authService = new AuthService();
     static CourseService courseService = new CourseService();
     static UserService userService = new UserService();
-    static ResearchService researchService = new ResearchService();
     static NewsService newsService = new NewsService();
+    static ResearchService researchService = new ResearchService(db, newsService);
     static TechSupportService techSupportService = new TechSupportService();
 
     public static void main(String[] args) {

@@ -121,7 +121,7 @@ public class DataInitializer {
 
         // ===== RESEARCH PROJECT =====
         ResearchProject project1 = new ResearchProject("AI in Education");
-        project1.addParticipant((Researcher) teacher1);
+//        project1.addParticipant((Researcher) teacher1); пока дайын болғанша комент
         project1.addPaper(paper1);
 
         db.getResearchProjects().add(project1);
