@@ -1,5 +1,7 @@
 package university.models.research;
 
+import university.enums.CitationFormat;
+
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -22,8 +24,7 @@ public class ResearchPaper implements Comparable<ResearchPaper>{
         this.date = new Date();
     }
 
-    public ResearchPaper(String title, List<String> authors, String journal,
-                         Date date, String doi, int pages) {
+    public ResearchPaper(String title, List<String> authors, String journal, Date date, String doi, int pages) {
         this(title);
         this.authors = new ArrayList<>(authors);
         this.journal = journal;
@@ -36,6 +37,34 @@ public class ResearchPaper implements Comparable<ResearchPaper>{
         if (author != null && !author.isBlank()) {
             authors.add(author);
         }
+    }
+
+    public String getCitation(CitationFormat format) {
+        String authorStr = authors.isEmpty() ? "Unknown" : String.join(", ", authors);
+        int  year = (date != null) ? (date.getYear() + 1900) : 0;
+        String doiStr = (doi != null && !doi.isBlank()) ? doi : "N/A";
+        String journalStr = (journal != null && !journal.isBlank()) ? journal : "Unknown Journal";
+
+        return switch (format) {
+            case PLAIN_TEXT -> String.format(
+                    "%s. \"%s\". %s (%d). DOI: %s",
+                    authorStr, title, journalStr, year, doiStr
+            );
+            case BIBTEX -> {
+                String firstSurname = authors.isEmpty() ? "unknown" : authors.get(0).trim().split("\\s+")[0].toLowerCase();
+                yield String.format(
+                        "@article{%s%d,%n" +
+                                "  author  = {%s},%n" +
+                                "  title   = {%s},%n" +
+                                "  journal = {%s},%n" +
+                                "  year    = {%d},%n" +
+                                "  doi     = {%s}%n" +
+                                "}",
+                        firstSurname, year,
+                        authorStr, title, journalStr, year, doiStr
+                );
+            }
+        };
     }
 
     @Override

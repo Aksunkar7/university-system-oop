@@ -6,10 +6,12 @@ import university.models.course.Schedule;
 import university.models.course.Attendance;
 import university.models.other.*;
 import university.models.research.Journal;
+import university.interfaces.Researcher;
 import university.models.research.ResearchPaper;
 import university.models.research.ResearchProject;
 import university.models.users.User;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 public class DataStorage {
@@ -50,6 +52,16 @@ public class DataStorage {
         return instance;
     }
 
+    public List<Researcher> getResearchers() {
+        List<Researcher> researchers = new ArrayList<>();
+        for (User u : users) {
+            if (u instanceof Researcher r) {   // pattern matching (Java 16+)
+                researchers.add(r);
+            }
+        }
+        return Collections.unmodifiableList(researchers);
+    }
+
     public List<User> getUsers() { return users; }
     public List<Course> getCourses() { return courses; }
     public List<EnrollmentCourse> getEnrollments() { return enrollments; }
@@ -62,7 +74,7 @@ public class DataStorage {
     public List<Attendance> getAttendances() { return attendances; }
     public List<Message> getMessages() { return messages; }
     public List<String> getLogs() { return logs; }
-    
+
     public void log(String action) {
         logs.add(action);
     }

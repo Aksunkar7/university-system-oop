@@ -18,14 +18,26 @@ public class ResearchProject {
         this.papers = new ArrayList<>();
     }
 
-    public String getTopic() { return topic; }
-    public List<Researcher> getParticipants() { return participants; }
-    public List<ResearchPaper> getPapers() { return papers; }
+    public void addParticipant(Researcher r) {
+        Objects.requireNonNull(r, "Researcher can't be null");
+        if(!participants.contains(r)) {
+            participants.add(r);
+            System.out.printf("[ResearchProject] Researcher added to \"%s\"%n", topic);
+        }
+        else {
+            System.out.printf("[ResearchProject] Researcher already inh \"%s\"%n", topic);
+        }
+    }
 
-    public List<ResearchPaper> getPapersSortedByCitations() {
-        List<ResearchPaper> sorted = new ArrayList<>(papers);
-        Collections.sort(sorted); // uses ResearchPaper.compareTo()
-        return Collections.unmodifiableList(sorted);
+    public void addPaper(ResearchPaper paper) {
+        Objects.requireNonNull(paper, "Paper can't be null");
+        if(!papers.contains(paper)) {
+            papers.add(paper);
+            System.out.printf("[ResearchProject] Paper \"%s\" added to \"%s\"%n", paper.getTitle(), topic);
+        }
+        else {
+            System.out.printf("[ResearchProject] Paper \"%s\" already in \"%s\"%n", paper.getTitle(), topic);
+        }
     }
 
     public int getTotalCitations() {
@@ -34,6 +46,16 @@ public class ResearchProject {
 
     public boolean hasParticipant(Researcher researcher) {
         return participants.contains(researcher);
+    }
+
+    public String getTopic() { return topic; }
+    public List<Researcher> getParticipants() { return participants; }
+    public List<ResearchPaper> getPapers() { return papers; }
+
+    public List<ResearchPaper> getPapersSortedByCitations() {
+        List<ResearchPaper> sorted = new ArrayList<>(papers);
+        Collections.sort(sorted); // uses ResearchPaper.compareTo()
+        return Collections.unmodifiableList(sorted);
     }
 
     @Override
