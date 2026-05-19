@@ -1,4 +1,4 @@
-﻿package university.patterns;
+package university.patterns;
 
 import university.models.course.Course;
 import university.models.course.EnrollmentCourse;

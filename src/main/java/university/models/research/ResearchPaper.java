@@ -1,4 +1,4 @@
-﻿package university.models.research;
+package university.models.research;
 
 import university.enums.CitationFormat;
 

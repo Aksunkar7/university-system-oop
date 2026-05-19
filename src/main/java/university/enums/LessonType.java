@@ -1,2 +1,2 @@
-﻿package university.enums;
+package university.enums;
 public enum LessonType { LECTURE, PRACTICE }

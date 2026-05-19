@@ -10,33 +10,28 @@ public class Schedule {
     private Teacher teacher;
     private Room room;
     private Date dateTime;
-    private String dayOfWeek;
 
-    public Schedule(Course course, Teacher teacher, Room room, Date dateTime, String dayOfWeek) {
+    public Schedule(Course course, Teacher teacher, Room room, Date dateTime) {
         this.course = course;
         this.teacher = teacher;
         this.room = room;
         this.dateTime = dateTime;
-        this.dayOfWeek = dayOfWeek;
     }
 
     public Course getCourse() { return course; }
     public Teacher getTeacher() { return teacher; }
     public Room getRoom() { return room; }
     public Date getDateTime() { return dateTime; }
-    public String getDayOfWeek() { return dayOfWeek; }
 
     public void setCourse(Course course) { this.course = course; }
     public void setTeacher(Teacher teacher) { this.teacher = teacher; }
     public void setRoom(Room room) { this.room = room; }
     public void setDateTime(Date dateTime) { this.dateTime = dateTime; }
-    public void setDayOfWeek(String dayOfWeek) { this.dayOfWeek = dayOfWeek; }
 
     @Override
     public String toString() {
         return "Schedule{course=" + course.getName() +
-                ", teacher=" + teacher.getFirstName() + " " + teacher.getLastName() +
                 ", room=" + room.getRoomNumber() +
-                ", day=" + dayOfWeek + "}";
+                ", dateTime=" + dateTime + "}";
     }
 }

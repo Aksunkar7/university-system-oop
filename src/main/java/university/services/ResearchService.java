@@ -16,6 +16,10 @@ import java.util.Comparator;
 
 
 public class ResearchService {
+    private Comparator<ResearchPaper> c;
+
+//    public ResearchService(){}
+
 
     private final DataStorage dataStorage;
     private final NewsService newsService;
@@ -58,6 +62,7 @@ public class ResearchService {
         return h;
     }
 
+    // Strategy pattern
     public void printPapers(Researcher r, Comparator<ResearchPaper> c) {
         if (r == null) throw new IllegalArgumentException("Researcher cannot be null");
         if (c == null) throw new IllegalArgumentException("Comparator cannot be null");

@@ -3,8 +3,6 @@ package university.models.users;
 import university.enums.Language;
 import university.enums.ManagerType;
 
-import java.util.List;
-
 public class Manager extends Employee {
 
     private ManagerType managerType;
@@ -19,15 +17,6 @@ public class Manager extends Employee {
 
     public ManagerType getManagerType() { return managerType; }
     public void setManagerType(ManagerType managerType) { this.managerType = managerType; }
-
-    public void approveStudentRequest(Student student) {
-        System.out.println("Request approved for: " + student.getFirstName() + " " + student.getLastName());
-    }
-
-    public List<Student> viewAllStudents() {
-        // логика в сервисе
-        return null;
-    }
 
     @Override
     public String getInfo() {

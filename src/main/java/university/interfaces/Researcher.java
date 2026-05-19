@@ -1,4 +1,4 @@
-﻿package university.interfaces;
+package university.interfaces;
 
 import university.models.research.ResearchPaper;
 import university.models.research.ResearchProject;

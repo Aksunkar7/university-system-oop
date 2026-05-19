@@ -11,6 +11,8 @@ public class Mark {
     private double finalMark;
     private double total;
 
+
+
     public Mark(Student student, Course course, double att1, double att2, double finalMark) {
         this.student = student;
         this.course = course;

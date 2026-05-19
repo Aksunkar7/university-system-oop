@@ -1,4 +1,4 @@
-﻿package university.models.users;
+package university.models.users;
 
 import university.enums.Language;
 import java.util.ArrayList;

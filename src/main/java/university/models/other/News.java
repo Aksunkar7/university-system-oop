@@ -62,4 +62,11 @@ public class News {
     public void setTitle(String title) { this.title   = Objects.requireNonNull(title); }
     public void setContent(String content) { this.content = Objects.requireNonNull(content); }
     public void setTopic(String topic) { this.topic   = Objects.requireNonNull(topic); }
+    public void pin() {
+        this.isPinned = true;
+    }
+
+    public void addComment(String comment) {
+        comments.add(comment);
+    }
 }
