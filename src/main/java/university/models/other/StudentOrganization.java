@@ -27,6 +27,22 @@ public class StudentOrganization {
         }
     }
 
+    public void removeMember(Student student) {
+        Objects.requireNonNull(student, "Student cannot be null");
+        if (student.equals(head)) {
+            throw new IllegalStateException(
+                    "Can't remove the head. Transfer leadership first via setHead().");
+        }
+        if (members.remove(student)) {
+            System.out.printf("[%s] %s %s left.%n",
+                    name, student.getFirstName(), student.getLastName());
+        }
+    }
+
+    public boolean isMember(Student student) {
+        return members.contains(student);
+    }
+
     @Override
     public String toString() {
         return String.format(
