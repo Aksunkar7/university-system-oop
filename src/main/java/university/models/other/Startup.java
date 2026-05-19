@@ -21,6 +21,31 @@ public class Startup {
         members.add(founder); // founder is always a member
     }
 
+    public void addMember(Student student) {
+        Objects.requireNonNull(student, "Student cannot be null");
+        if (!members.contains(student)) {
+            members.add(student);
+            System.out.printf("[Startup: %s] %s %s joined the team.%n",
+                    name, student.getFirstName(), student.getLastName());
+        }
+    }
+
+    public void removeMember(Student student) {
+        Objects.requireNonNull(student, "Student cannot be null");
+        if (student.equals(founder)) {
+            throw new IllegalStateException("The founder cannot be removed from the startup.");
+        }
+        if (members.remove(student)) {
+            System.out.printf("[Startup: %s] %s %s left the team.%n",
+                    name, student.getFirstName(), student.getLastName());
+        }
+    }
+
+    public boolean hasMember(Student student) {
+        return members.contains(student);
+    }
+
+
     @Override
     public String toString() {
         return String.format(

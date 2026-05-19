@@ -23,6 +23,27 @@ public class News {
         this.date = new Date();
     }
 
+        public void addComment(String comment) {
+        if(comment == null || comment.isBlank()) {
+            throw new IllegalArgumentException("Comment can't be blank");
+        }
+        comments.add(comment);
+        }
+
+        public void pin() {
+            if(!isPinned) {
+                isPinned = true;
+                System.out.printf("[News] \"%s\" has been pinned.%n", title);
+            }
+        }
+
+        public void unpin() {
+            if(isPinned) {
+                isPinned = false;
+                System.out.printf("[News] \"%s\" has been unpinned.%n", title);
+            }
+        }
+
     @Override
     public String toString() {
         return String.format(

@@ -28,7 +28,7 @@ public class Message {
         return String.format("[%s] %s %s → %s %s: %s",
                 date,
                 from.getFirstName(), from.getLastName(),
-                to.getFirstName(),   to.getLastName(),
+                to.getFirstName(), to.getLastName(),
                 content
         );
     }
