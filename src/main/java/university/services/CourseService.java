@@ -13,7 +13,7 @@ public class CourseService {
 
     private DataStorage db = DataStorage.getInstance();
 
-  
+
     private List<Schedule> schedules = new ArrayList<>();
     private List<Attendance> attendances = new ArrayList<>();
 
@@ -22,7 +22,6 @@ public class CourseService {
      * Проверяет: credits <= 21, failCount <= 3
      */
     public EnrollmentCourse registerStudentToCourse(Student s, Course c) throws Exception {
-
         int totalAfterEnroll = s.getCredits() + c.getCredits();
         if (totalAfterEnroll > 21) {
             throw new Exception("CreditLimitException: Student would exceed 21 credits");
@@ -42,22 +41,28 @@ public class CourseService {
     }
 
 
-    // Выставление оценки студенту.
-    // To fix logic
+     // Mark создаётся через EnrollmentCourse
+
     public Mark putMark(Student s, Course c, double att1, double att2, double finalMark) {
-        Mark mark = new Mark(s, c, att1, att2, finalMark);
         EnrollmentCourse enrollment = findEnrollment(c);
         if (enrollment == null) {
             enrollment = new EnrollmentCourse(c, null);
             db.getEnrollments().add(enrollment);
         }
 
+        // Проверяем — студент должен быть записан на курс
+        if (!enrollment.getStudents().contains(s)) {
+            enrollment.addStudent(s);
+        }
+
+        Mark mark = new Mark(enrollment, att1, att2, finalMark);
         enrollment.addMark(mark);
         return mark;
     }
 
 
-     // Назначение учителя на курс.
+    // Назначение учителя на курс.
+
     public void assignTeacherToCourse(Teacher t, Course c) {
         EnrollmentCourse enrollment = findEnrollment(c);
         if (enrollment == null) {
@@ -71,7 +76,6 @@ public class CourseService {
 
 
     // Генерация расписания.
-
     public Schedule generateSchedule(Course c, Room r) {
         Teacher assignedTeacher = null;
         EnrollmentCourse enrollment = findEnrollment(c);
@@ -85,17 +89,22 @@ public class CourseService {
     }
 
 
-     // Отметка посещаемости.
+    // Attendance хранит EnrollmentCourse
 
     public Attendance markAttendance(Student s, Course c, boolean isPresent) {
-        Attendance attendance = new Attendance(s, c, new Date(), isPresent);
+        EnrollmentCourse enrollment = findEnrollment(c);
+        if (enrollment == null) {
+            enrollment = new EnrollmentCourse(c, null);
+            db.getEnrollments().add(enrollment);
+        }
+
+        Attendance attendance = new Attendance(enrollment, new Date(), isPresent);
         attendances.add(attendance);
         return attendance;
     }
 
 
-    // Транскрипт студента.
-
+    // Транскрипт студента — все оценки по всем курсам.
     public String getTranscript(Student s) {
         StringBuilder sb = new StringBuilder();
         sb.append("========================================\n");
@@ -106,15 +115,14 @@ public class CourseService {
         boolean found = false;
         for (Object obj : db.getEnrollments()) {
             EnrollmentCourse ec = (EnrollmentCourse) obj;
+            if (!ec.getStudents().contains(s)) continue;
             for (Mark m : ec.getMarks()) {
-                if (m.getStudent().equals(s)) {
-                    sb.append(String.format("%-25s | ATT1: %5.1f | ATT2: %5.1f | FINAL: %5.1f | TOTAL: %5.1f | %s\n",
-                            ec.getCourse().getName(),
-                            m.getAtt1(), m.getAtt2(), m.getFinalMark(),
-                            m.getTotal(),
-                            m.isPassed() ? "PASS" : "FAIL"));
-                    found = true;
-                }
+                sb.append(String.format("%-25s | ATT1: %5.1f | ATT2: %5.1f | FINAL: %5.1f | TOTAL: %5.1f | %s\n",
+                        ec.getCourse().getName(),
+                        m.getFirstAttestation(), m.getSecondAttestation(), m.getFinalExam(),
+                        m.getTotal(),
+                        m.isPassed() ? "PASS" : "FAIL"));
+                found = true;
             }
         }
 
@@ -124,8 +132,7 @@ public class CourseService {
     }
 
 
-     // Отчёт учителя по курсу.
-
+    // Отчёт учителя по курсу.
     public String generateReport(Teacher t, Course c) {
         StringBuilder sb = new StringBuilder();
         sb.append("========================================\n");
@@ -140,8 +147,7 @@ public class CourseService {
             sb.append("Students enrolled: ").append(ec.getStudents().size()).append("\n");
             int passed = 0, failed = 0;
             for (Mark m : ec.getMarks()) {
-                sb.append(String.format("%-20s | Total: %5.1f | %s\n",
-                        m.getStudent().getFirstName() + " " + m.getStudent().getLastName(),
+                sb.append(String.format("Total: %5.1f | %s\n",
                         m.getTotal(),
                         m.isPassed() ? "PASS" : "FAIL"));
                 if (m.isPassed()) passed++; else failed++;
@@ -155,7 +161,6 @@ public class CourseService {
 
 
     // Одобрить курс для регистрации.
-
     public void approveCourseRegistration(Course c) {
         db.getCourses().add(c);
         System.out.println("Course approved for registration: " + c.getName());
@@ -163,7 +168,6 @@ public class CourseService {
 
 
     // Добавить курс для регистрации (если ещё нет).
-
     public void addCourseForRegistration(Course c) {
         if (!db.getCourses().contains(c)) {
             db.getCourses().add(c);
@@ -172,18 +176,7 @@ public class CourseService {
     }
 
 
-
-    private EnrollmentCourse findEnrollment(Course c) {
-        for (Object obj : db.getEnrollments()) {
-            EnrollmentCourse ec = (EnrollmentCourse) obj;
-            if (ec.getCourse().getId() == c.getId()) return ec;
-        }
-        return null;
-    }
-
-
-    // Просмотр расписания студента — все курсы на которые он записан.
-
+    // Просмотр расписания студента.
     public List<Schedule> getScheduleForStudent(Student s) {
         List<Schedule> result = new ArrayList<>();
         for (Schedule sch : schedules) {
@@ -196,16 +189,24 @@ public class CourseService {
     }
 
 
-    // Просмотр расписания по конкретному курсу.
-
+    // Просмотр расписания по курсу.
     public List<Schedule> getScheduleForCourse(Course c) {
         List<Schedule> result = new ArrayList<>();
         for (Schedule sch : schedules) {
-            if (sch.getCourse().getId() == c.getId()) {
+            if (sch.getCourse().getCourseId().equals(c.getCourseId())) {
                 result.add(sch);
             }
         }
         return result;
+    }
+
+    
+    private EnrollmentCourse findEnrollment(Course c) {
+        for (Object obj : db.getEnrollments()) {
+            EnrollmentCourse ec = (EnrollmentCourse) obj;
+            if (ec.getCourse().getCourseId().equals(c.getCourseId())) return ec;
+        }
+        return null;
     }
 
     public List<Schedule> getSchedules() { return schedules; }

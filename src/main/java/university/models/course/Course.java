@@ -4,46 +4,51 @@ import university.enums.CourseType;
 
 public class Course {
 
-    private int id;
+    private String courseId;
     private String name;
     private int credits;
     private CourseType courseType;
-    private String description;
+    private int cntCourseLecture;
+    private int cntCoursePractice;
 
-    public Course(int id, String name, int credits, CourseType courseType, String description) {
-        this.id = id;
+    public Course(String courseId, String name, int credits, CourseType courseType,
+                  int cntCourseLecture, int cntCoursePractice) {
+        this.courseId = courseId;
         this.name = name;
         this.credits = credits;
         this.courseType = courseType;
-        this.description = description;
+        this.cntCourseLecture = cntCourseLecture;
+        this.cntCoursePractice = cntCoursePractice;
     }
 
-    public int getId() { return id; }
+    public String getCourseId() { return courseId; }
     public String getName() { return name; }
     public int getCredits() { return credits; }
     public CourseType getCourseType() { return courseType; }
-    public String getDescription() { return description; }
+    public int getCntCourseLecture() { return cntCourseLecture; }
+    public int getCntCoursePractice() { return cntCoursePractice; }
 
     public void setName(String name) { this.name = name; }
     public void setCredits(int credits) { this.credits = credits; }
-    public void setDescription(String description) { this.description = description; }
+    public void setCntCourseLecture(int cntCourseLecture) { this.cntCourseLecture = cntCourseLecture; }
+    public void setCntCoursePractice(int cntCoursePractice) { this.cntCoursePractice = cntCoursePractice; }
+
+    public String getInfo() {
+        return "Course{id='" + courseId + "', name='" + name +
+                "', credits=" + credits + ", type=" + courseType + "}";
+    }
 
     @Override
-    public String toString() {
-        return "Course{id=" + id + ", name='" + name + "', credits=" + credits +
-                ", type=" + courseType + "}";
-    }
+    public String toString() { return getInfo(); }
 
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (!(o instanceof Course)) return false;
         Course course = (Course) o;
-        return this.id == course.id;
+        return this.courseId.equals(course.courseId);
     }
 
     @Override
-    public int hashCode() {
-        return Integer.hashCode(id);
-    }
+    public int hashCode() { return courseId.hashCode(); }
 }
