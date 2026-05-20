@@ -1,42 +1,41 @@
 package university.models.course;
 
-import university.models.users.Student;
-
 public class Mark {
 
-    private Student student;
-    private Course course;
-    private double att1;
-    private double att2;
-    private double finalMark;
-    private double total;
+    private double firstAttestation;
+    private double secondAttestation;
+    private double finalExam;
+    private EnrollmentCourse enrollment;
 
-    public Mark(Student student, Course course, double att1, double att2, double finalMark) {
-        this.student = student;
-        this.course = course;
-        this.att1 = att1;
-        this.att2 = att2;
-        this.finalMark = finalMark;
-        // Стандартная формула: att1 + att2 = 60%, final = 40%
-        this.total = (att1 * 0.3) + (att2 * 0.3) + (finalMark * 0.4);
+    public Mark(EnrollmentCourse enrollment, double firstAttestation, double secondAttestation, double finalExam) {
+        this.enrollment = enrollment;
+        this.firstAttestation = firstAttestation;
+        this.secondAttestation = secondAttestation;
+        this.finalExam = finalExam;
     }
 
-    public Student getStudent() { return student; }
-    public Course getCourse() { return course; }
-    public double getAtt1() { return att1; }
-    public double getAtt2() { return att2; }
-    public double getFinalMark() { return finalMark; }
-    public double getTotal() { return total; }
+    public double getTotal() {
+        return firstAttestation * 0.3 + secondAttestation * 0.3 + finalExam * 0.4;
+    }
 
-    // Проходной балл = 50
-    public boolean isPassed() { return total >= 50.0; }
+    public boolean isPassed() { return getTotal() >= 50.0; }
+
+    public EnrollmentCourse getEnrollment() { return enrollment; }
+    public double getFirstAttestation() { return firstAttestation; }
+    public double getSecondAttestation() { return secondAttestation; }
+    public double getFinalExam() { return finalExam; }
+
+    public void setFirstAttestation(double firstAttestation) { this.firstAttestation = firstAttestation; }
+    public void setSecondAttestation(double secondAttestation) { this.secondAttestation = secondAttestation; }
+    public void setFinalExam(double finalExam) { this.finalExam = finalExam; }
 
     @Override
     public String toString() {
-        return "Mark{student=" + student.getFirstName() + " " + student.getLastName() +
-                ", course=" + course.getName() +
-                ", att1=" + att1 + ", att2=" + att2 +
-                ", final=" + finalMark + ", total=" + String.format("%.2f", total) +
+        return "Mark{course=" + enrollment.getCourse().getName() +
+                ", att1=" + firstAttestation +
+                ", att2=" + secondAttestation +
+                ", final=" + finalExam +
+                ", total=" + String.format("%.2f", getTotal()) +
                 ", passed=" + isPassed() + "}";
     }
 }
