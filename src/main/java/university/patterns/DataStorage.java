@@ -29,6 +29,7 @@ public class DataStorage {
     private List<Attendance> attendances;
     private List<Message> messages;
     private List<String> logs;
+    private List<String> complaints;
 
     private DataStorage() {
         users = new ArrayList<>();
@@ -43,6 +44,7 @@ public class DataStorage {
         attendances = new ArrayList<>();
         messages = new ArrayList<>();
         logs = new ArrayList<>();
+        complaints = new ArrayList<>();
     }
 
     public static DataStorage getInstance() {
@@ -74,6 +76,7 @@ public class DataStorage {
     public List<Attendance> getAttendances() { return attendances; }
     public List<Message> getMessages() { return messages; }
     public List<String> getLogs() { return logs; }
+    public List<String> getComplaints() { return complaints; }
 
     public void log(String action) {
         logs.add(action);

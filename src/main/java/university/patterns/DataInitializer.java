@@ -5,10 +5,13 @@ import university.interfaces.Researcher;
 import university.models.course.Course;
 import university.models.other.News;
 import university.models.other.StudentOrganization;
+import university.models.other.TechRequest;
 import university.models.research.Journal;
 import university.models.research.ResearchPaper;
 import university.models.research.ResearchProject;
 import university.models.users.*;
+import university.services.TechSupportService;
+
 import java.util.Arrays;
 import java.util.Date;
 
@@ -72,14 +75,9 @@ public class DataInitializer {
         db.getUsers().add(techSupport);
 
         // ===== COURSES =====
-        Course course1 = new Course(1, "OOP and Design",
-                5, CourseType.MAJOR, "Object Oriented Programming");
-
-        Course course2 = new Course(2, "Data Structures",
-                4, CourseType.MAJOR, "Algorithms and Data Structures");
-
-        Course course3 = new Course(3, "English",
-                2, CourseType.FREE_ELECTIVE, "English language");
+        Course course1 = new Course("1", "OOP and Design", 5, CourseType.MAJOR, 3, 2);
+        Course course2 = new Course("2", "Data Structures", 4, CourseType.MAJOR, 2, 2);
+        Course course3 = new Course("3", "English", 2, CourseType.FREE_ELECTIVE, 1, 1);
 
         db.getCourses().add(course1);
         db.getCourses().add(course2);
@@ -121,7 +119,7 @@ public class DataInitializer {
 
         // ===== RESEARCH PROJECT =====
         ResearchProject project1 = new ResearchProject("AI in Education");
-//        project1.addParticipant((Researcher) teacher1); пока дайын болғанша комент
+//        project1.addParticipant((Researcher) teacher1);
         project1.addPaper(paper1);
 
         db.getResearchProjects().add(project1);
@@ -134,5 +132,8 @@ public class DataInitializer {
         System.out.println("Users: " + db.getUsers().size());
         System.out.println("Courses: " + db.getCourses().size());
         System.out.println("News: " + db.getNews().size());
+
+        TechSupportService techSupportService = new TechSupportService();
+        TechRequest request = techSupportService.sendRequest(teacher1, "Fix projector in room 101");
     }
 }

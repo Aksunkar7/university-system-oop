@@ -57,6 +57,38 @@ public class CourseService {
 
         Mark mark = new Mark(enrollment, att1, att2, finalMark);
         enrollment.addMark(mark);
+
+        // обновляем GPA студента
+        double totalMarks = 0;
+        int count = 0;
+        for (EnrollmentCourse ec : db.getEnrollments()) {
+            if (ec.getStudents().contains(s)) {
+                for (Mark m : ec.getMarks()) {
+                    totalMarks += m.getTotal();
+                    count++;
+                }
+            }
+        }
+        if (count > 0) {
+            double avgTotal = totalMarks / count;
+            double gpa;
+            if (avgTotal >= 95)      gpa = 4.0;
+            else if (avgTotal >= 90) gpa = 3.67;
+            else if (avgTotal >= 85) gpa = 3.33;
+            else if (avgTotal >= 80) gpa = 3.0;
+            else if (avgTotal >= 75) gpa = 2.67;
+            else if (avgTotal >= 70) gpa = 2.33;
+            else if (avgTotal >= 65) gpa = 2.0;
+            else if (avgTotal >= 60) gpa = 1.67;
+            else if (avgTotal >= 55) gpa = 1.33;
+            else if (avgTotal >= 50) gpa = 1.0;
+            else                     gpa = 0.0;
+            s.setGpa(gpa);
+        }
+
+// обновляем кредиты
+        s.setCredits(s.getCredits() + c.getCredits());
+
         return mark;
     }
 
@@ -84,7 +116,7 @@ public class CourseService {
         }
 
         Schedule schedule = new Schedule(c, assignedTeacher, r, new Date());
-        schedules.add(schedule);
+        db.getSchedules().add(schedule);
         return schedule;
     }
 
@@ -99,7 +131,7 @@ public class CourseService {
         }
 
         Attendance attendance = new Attendance(enrollment, new Date(), isPresent);
-        attendances.add(attendance);
+        db.getAttendances().add(attendance);
         return attendance;
     }
 
@@ -162,7 +194,9 @@ public class CourseService {
 
     // Одобрить курс для регистрации.
     public void approveCourseRegistration(Course c) {
-        db.getCourses().add(c);
+        if (!db.getCourses().contains(c)) { // проверка перед добавлением
+            db.getCourses().add(c);
+        }
         System.out.println("Course approved for registration: " + c.getName());
     }
 
@@ -208,7 +242,7 @@ public class CourseService {
         }
         return null;
     }
-
-    public List<Schedule> getSchedules() { return schedules; }
-    public List<Attendance> getAttendances() { return attendances; }
+//
+//    public List<Schedule> getSchedules() { return schedules; }
+//    public List<Attendance> getAttendances() { return attendances; }
 }

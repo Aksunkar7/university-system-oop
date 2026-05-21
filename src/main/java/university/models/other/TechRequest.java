@@ -75,4 +75,7 @@ public class TechRequest {
     public String  getDescription() { return description; }
     public RequestStatus getStatus() { return status; }
     public Employee  getCreatedBy() { return createdBy; }
+    public void setStatus(RequestStatus status) {
+        this.status = status;
+    }
 }

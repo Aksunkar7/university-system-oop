@@ -15,7 +15,7 @@ public class Mark {
     }
 
     public double getTotal() {
-        return firstAttestation * 0.3 + secondAttestation * 0.3 + finalExam * 0.4;
+        return firstAttestation + secondAttestation + finalExam;
     }
 
     public boolean isPassed() { return getTotal() >= 50.0; }

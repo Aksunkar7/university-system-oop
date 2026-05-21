@@ -45,6 +45,11 @@ public class Main {
         System.out.println("0. Exit");
         System.out.print("Choice: ");
 
+        if (!scanner.hasNextInt()) {
+            System.out.println("Please enter a number!");
+            scanner.nextLine();
+            return;
+        }
         int choice = scanner.nextInt();
         scanner.nextLine();
 
@@ -140,8 +145,8 @@ public class Main {
                     System.out.println("\n=== MY MARKS ===");
                     boolean found = false;
                     for (EnrollmentCourse ec : db.getEnrollments()) {
-                        for (Mark m : ec.getMarks()) {
-                            if (m.getStudent().equals(student)) {
+                        if (ec.getStudents().contains(student)) {
+                            for (Mark m : ec.getMarks()) {
                                 System.out.println(m);
                                 found = true;
                             }
@@ -156,7 +161,7 @@ public class Main {
                     System.out.println("\n=== MY ATTENDANCE ===");
                     boolean found = false;
                     for (Attendance a : db.getAttendances()) {
-                        if (a.getStudent().equals(student)) {
+                        if (a.getEnrollment().getStudents().contains(student)) {
                             System.out.println(a);
                             found = true;
                         }
@@ -328,6 +333,8 @@ public class Main {
 
                     System.out.println("Complaint sent with urgency: " + urgency);
                     db.log(teacher.getFirstName() + " sent complaint with urgency " + urgency);
+                    db.getComplaints().add(teacher.getFirstName() +
+                            " sent complaint with urgency: " + urgency);
                 }
                 case 0 -> {
                     System.out.println("Logged out!");
@@ -351,6 +358,7 @@ public class Main {
             System.out.println("6. Generate Schedule");
             System.out.println("7. Get Top Cited Researcher");
             System.out.println("8. View Employee Requests");
+            System.out.println("9. View Complaints");
             System.out.println("0. Logout");
             System.out.print("Choice: ");
 
@@ -450,6 +458,14 @@ public class Main {
                         System.out.println("No requests");
                     } else {
                         db.getTechRequests().forEach(System.out::println);
+                    }
+                }
+                case 9 -> {
+                    System.out.println("\n=== COMPLAINTS ===");
+                    if (db.getComplaints().isEmpty()) {
+                        System.out.println("No complaints");
+                    } else {
+                        db.getComplaints().forEach(System.out::println);
                     }
                 }
                 case 0 -> {
@@ -638,8 +654,8 @@ public class Main {
                     System.out.println("\n=== MY MARKS ===");
                     boolean found = false;
                     for (EnrollmentCourse ec : db.getEnrollments()) {
-                        for (Mark m : ec.getMarks()) {
-                            if (m.getStudent().equals(gradStudent)) {
+                        if (ec.getStudents().contains(gradStudent)) {
+                            for (Mark m : ec.getMarks()) {
                                 System.out.println(m);
                                 found = true;
                             }
