@@ -4,10 +4,9 @@ import university.models.users.*;
 import university.patterns.DataStorage;
 import java.util.ArrayList;
 import java.util.List;
-
+import university.models.other.Message;
 public class UserService {
     private DataStorage db = DataStorage.getInstance();
-    private List<String> logs = new ArrayList<>();
 
     public void addUser(User user) {
         db.getUsers().add(user);
@@ -51,11 +50,29 @@ public class UserService {
     }
 
     public void log(String action) {
-        logs.add(action);
+        db.getLogs().add(action);
         System.out.println("LOG: " + action);
     }
 
     public List<String> viewLogs() {
-        return logs;
+        return db.getLogs();
+    }
+
+    public Message sendMessage(Employee from, Employee to, String content) {
+        Message message = new Message(from, to, content);
+        db.getMessages().add(message);
+        db.log(from.getFirstName() + " sent message to " + to.getFirstName());
+        System.out.println("Message sent!");
+        return message;
+    }
+
+    public List<Message> getMessagesForEmployee(Employee employee) {
+        List<Message> result = new ArrayList<>();
+        for (Message m : db.getMessages()) {
+            if (m.getTo().equals(employee)) {
+                result.add(m);
+            }
+        }
+        return result;
     }
 }

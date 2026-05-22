@@ -1,5 +1,6 @@
 package university.services;
 
+import university.enums.CourseType;
 import university.models.course.*;
 import university.models.users.Student;
 import university.models.users.Teacher;
@@ -149,11 +150,15 @@ public class CourseService {
             EnrollmentCourse ec = (EnrollmentCourse) obj;
             if (!ec.getStudents().contains(s)) continue;
             for (Mark m : ec.getMarks()) {
-                sb.append(String.format("%-25s | ATT1: %5.1f | ATT2: %5.1f | FINAL: %5.1f | TOTAL: %5.1f | %s\n",
+                sb.append(String.format(
+                        "%-25s | ATT1: %5.1f | ATT2: %5.1f | FINAL: %5.1f | TOTAL: %5.1f | %s\n",
                         ec.getCourse().getName(),
-                        m.getFirstAttestation(), m.getSecondAttestation(), m.getFinalExam(),
+                        m.getFirstAttestation(),
+                        m.getSecondAttestation(),
+                        m.getFinalExam(),
                         m.getTotal(),
-                        m.isPassed() ? "PASS" : "FAIL"));
+                        m.getStatus()  // показываем статус вместо PASS/FAIL
+                ));
                 found = true;
             }
         }
@@ -241,6 +246,34 @@ public class CourseService {
             if (ec.getCourse().getCourseId().equals(c.getCourseId())) return ec;
         }
         return null;
+    }
+    public Course createCourse(String courseId, String name,
+                               int credits, CourseType type) {
+        Course course = new Course(courseId, name, credits, type, 0, 0);
+        db.getCourses().add(course);
+        System.out.println("Course created: " + course);
+        return course;
+    }
+
+    public void rateTeacher(Student student, Teacher teacher, double rating) {
+        // проверяем что студент записан на курс учителя
+        boolean enrolled = false;
+        for (EnrollmentCourse ec : db.getEnrollments()) {
+            if (ec.getStudents().contains(student) &&
+                    ec.getTeachers().contains(teacher)) {
+                enrolled = true;
+                break;
+            }
+        }
+        if (!enrolled) {
+            System.out.println("You can only rate teachers of your courses!");
+            return;
+        }
+        // обновляем рейтинг учителя
+        teacher.setRating(rating);
+        System.out.println("Teacher rated: " + rating);
+        db.log(student.getFirstName() + " rated " +
+                teacher.getFirstName() + ": " + rating);
     }
 //
 //    public List<Schedule> getSchedules() { return schedules; }

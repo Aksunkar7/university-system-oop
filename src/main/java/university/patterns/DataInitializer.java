@@ -2,7 +2,7 @@ package university.patterns;
 
 import university.enums.*;
 import university.interfaces.Researcher;
-import university.models.course.Course;
+import university.models.course.*;
 import university.models.other.News;
 import university.models.other.StudentOrganization;
 import university.models.other.TechRequest;
@@ -78,10 +78,12 @@ public class DataInitializer {
         Course course1 = new Course("1", "OOP and Design", 5, CourseType.MAJOR, 3, 2);
         Course course2 = new Course("2", "Data Structures", 4, CourseType.MAJOR, 2, 2);
         Course course3 = new Course("3", "English", 2, CourseType.FREE_ELECTIVE, 1, 1);
+        Course course4 = new Course("4", "Web Dev", 16, CourseType.MAJOR, 13, 3);
 
         db.getCourses().add(course1);
         db.getCourses().add(course2);
         db.getCourses().add(course3);
+        db.getCourses().add(course4);
 
         // ===== NEWS =====
         News news1 = new News("Welcome to university!",
@@ -116,10 +118,12 @@ public class DataInitializer {
 
         db.getResearchPapers().add(paper1);
         db.getResearchPapers().add(paper2);
+        teacher1.addPaper(paper1);
+        teacher1.addPaper(paper2);
 
         // ===== RESEARCH PROJECT =====
         ResearchProject project1 = new ResearchProject("AI in Education");
-//        project1.addParticipant((Researcher) teacher1);
+        project1.addParticipant((Researcher) teacher1);
         project1.addPaper(paper1);
 
         db.getResearchProjects().add(project1);
@@ -127,6 +131,7 @@ public class DataInitializer {
         // ===== STUDENT ORGANIZATION =====
         StudentOrganization org = new StudentOrganization("CS Club", student1);
         org.addMember(student2);
+        db.getOrganizations().add(org);
 
         System.out.println("Data initialized successfully!");
         System.out.println("Users: " + db.getUsers().size());
@@ -135,5 +140,58 @@ public class DataInitializer {
 
         TechSupportService techSupportService = new TechSupportService();
         TechRequest request = techSupportService.sendRequest(teacher1, "Fix projector in room 101");
+
+        // В конце initialize() добавь:
+
+// ===== PRE-ASSIGN COURSES =====
+// Назначаем учителей на курсы
+        EnrollmentCourse ec1 = new EnrollmentCourse(course1, LessonType.LECTURE);
+        ec1.addTeacher(teacher1);
+        db.getEnrollments().add(ec1);
+
+        EnrollmentCourse ec2 = new EnrollmentCourse(course2, LessonType.PRACTICE);
+        ec2.addTeacher(teacher2);
+        db.getEnrollments().add(ec2);
+
+// ===== PRE-REGISTER STUDENTS =====
+// Регистрируем студентов на курсы
+        ec1.addStudent(student1);
+        ec2.addStudent(student2);
+        student1.setCredits(student1.getCredits() + course1.getCredits());
+        student2.setCredits(student2.getCredits() + course2.getCredits());
+
+// ===== PRE-SET MARKS =====
+// Ставим оценки
+        Mark mark1 = new Mark(ec1, 28, 27, 38);
+        ec1.addMark(mark1);
+        student1.setGpa(3.67); // 93 total → A-
+
+        Mark mark2 = new Mark(ec2, 20, 22, 30);
+        ec2.addMark(mark2);
+        student2.setGpa(2.0); // 72 total → C+
+
+// ===== PRE-SCHEDULE =====
+        Room room1 = new Room("101", 60, RoomType.LECTURE_HALL);
+        Room room2 = new Room("205", 30, RoomType.LAB);
+        Schedule schedule1 = new Schedule(course1, teacher1, room1, new Date());
+        Schedule schedule2 = new Schedule(course2, teacher2, room2, new Date());
+        db.getSchedules().add(schedule1);
+        db.getSchedules().add(schedule2);
+
+// ===== PRE-ATTENDANCE =====
+        Attendance att1 = new Attendance(ec1, new Date(), true);
+        Attendance att2 = new Attendance(ec1, new Date(), false);
+        db.getAttendances().add(att1);
+        db.getAttendances().add(att2);
+
+// ===== PRE-TECH REQUESTS =====
+        TechSupportService tss = new TechSupportService();
+        tss.sendRequest(teacher2, "Replace keyboard in lab 205");
+
+// ===== PRE-NEWS =====
+        News news3 = new News("Top Researcher Award",
+                "Prof. Izbassar received top researcher award", "Research");
+        news3.pin();
+        db.getNews().add(news3);
     }
 }

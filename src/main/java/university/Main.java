@@ -8,8 +8,10 @@ import university.models.research.*;
 import university.models.users.*;
 import university.patterns.DataInitializer;
 import university.patterns.DataStorage;
+import university.patterns.UserFactory;
 import university.services.*;
 
+import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Scanner;
@@ -50,10 +52,9 @@ public class Main {
             scanner.nextLine();
             return;
         }
-        int choice = scanner.nextInt();
-        scanner.nextLine();
+        String choice = scanner.nextLine();
 
-        switch (choice) {
+        switch (Integer.parseInt(choice)) {
             case 1 -> login();
             case 0 -> {
                 System.out.println("Goodbye!");
@@ -106,6 +107,11 @@ public class Main {
             System.out.println("5. View Attendance");
             System.out.println("6. View Schedule");
             System.out.println("7. View News");
+            System.out.println("8. Rate Teacher");
+            System.out.println("9. Join Student Organization");
+            System.out.println("10. View My Organizations");
+            System.out.println("11. Subscribe to Journal");
+            System.out.println("12. View My Journals");
             System.out.println("0. Logout");
             System.out.print("Choice: ");
 
@@ -136,6 +142,7 @@ public class Main {
                                     courses.get(courseIndex).getName());
                             db.log(student.getFirstName() + " registered for " +
                                     courses.get(courseIndex).getName());
+                            student.setCredits(student.getCredits() + courses.get(courseIndex).getCredits());
                         } catch (Exception e) {
                             System.out.println("Error: " + e.getMessage());
                         }
@@ -184,6 +191,86 @@ public class Main {
                         if (!n.isPinned()) System.out.println(n);
                     }
                 }
+                case 8 -> {
+                    System.out.println("Select Teacher:");
+                    List<User> users = db.getUsers();
+                    int count = 1;
+                    for (User u : users) {
+                        if (u instanceof Teacher) {
+                            System.out.println(count++ + ". " + u.getInfo());
+                        }
+                    }
+                    System.out.print("Teacher number: ");
+                    int tNum = scanner.nextInt() - 1;
+                    scanner.nextLine();
+
+                    List<Teacher> teachers = new ArrayList<>();
+                    for (User u : db.getUsers()) {
+                        if (u instanceof Teacher) teachers.add((Teacher) u);
+                    }
+
+                    System.out.print("Rating (1-5): ");
+                    double rating = scanner.nextDouble();
+                    scanner.nextLine();
+
+                    courseService.rateTeacher(student, teachers.get(tNum), rating);
+                }
+                case 9 -> {
+                    System.out.println("\n=== STUDENT ORGANIZATIONS ===");
+                    List<StudentOrganization> orgs = db.getOrganizations();
+                    if (orgs.isEmpty()) {
+                        System.out.println("No organizations available");
+                        break;
+                    }
+                    for (int i = 0; i < orgs.size(); i++) {
+                        System.out.println((i + 1) + ". " + orgs.get(i));
+                    }
+                    System.out.print("Select organization: ");
+                    int orgIndex = scanner.nextInt() - 1;
+                    scanner.nextLine();
+                    orgs.get(orgIndex).addMember(student);
+                    System.out.println("Joined: " + orgs.get(orgIndex).getName());
+                    db.log(student.getFirstName() + " joined " +
+                            orgs.get(orgIndex).getName());
+                }
+                case 10 -> {
+                    System.out.println("\n=== MY ORGANIZATIONS ===");
+                    boolean found = false;
+                    for (StudentOrganization org : db.getOrganizations()) {
+                        if (org.getMembers().contains(student)) {
+                            System.out.println(org);
+                            found = true;
+                        }
+                    }
+                    if (!found) System.out.println("You are not in any organization");
+                }
+                case 11 -> {
+                    System.out.println("\n=== AVAILABLE JOURNALS ===");
+                    List<Journal> journals = db.getJournals();
+                    if (journals.isEmpty()) {
+                        System.out.println("No journals available");
+                        break;
+                    }
+                    for (int i = 0; i < journals.size(); i++) {
+                        System.out.println((i + 1) + ". " + journals.get(i));
+                    }
+                    System.out.print("Select journal: ");
+                    int jIndex = scanner.nextInt() - 1;
+                    scanner.nextLine();
+                    newsService.subscribeToJournal(student, journals.get(jIndex));
+                    System.out.println("Subscribed to: " + journals.get(jIndex).getName());
+                }
+                case 12 -> {
+                    System.out.println("\n=== MY JOURNALS ===");
+                    boolean found = false;
+                    for (Journal j : db.getJournals()) {
+                        if (j.getSubscribers().contains(student)) {
+                            System.out.println(j);
+                            found = true;
+                        }
+                    }
+                    if (!found) System.out.println("No subscriptions yet");
+                }
                 case 0 -> {
                     System.out.println("Logged out!");
                     return;
@@ -204,6 +291,10 @@ public class Main {
             System.out.println("4. Mark Attendance");
             System.out.println("5. Generate Report");
             System.out.println("6. Send Complaint");
+            System.out.println("7. Send Message");
+            System.out.println("8. View My Messages");
+            System.out.println("9. Subscribe to Journal");
+            System.out.println("10. View My Journals");
             System.out.println("0. Logout");
             System.out.print("Choice: ");
 
@@ -245,16 +336,52 @@ public class Main {
 
                         if (sIndex >= 0 && sIndex < ec.getStudents().size()) {
                             Student s = ec.getStudents().get(sIndex);
+
+                            // ATT1 валидация
                             System.out.print("ATT1 (0-30): ");
                             double att1 = scanner.nextDouble();
+                            while (att1 < 0 || att1 > 30) {
+                                System.out.print("Invalid! ATT1 must be 0-30: ");
+                                att1 = scanner.nextDouble();
+                            }
+
+                            // ATT2 валидация
                             System.out.print("ATT2 (0-30): ");
                             double att2 = scanner.nextDouble();
+                            while (att2 < 0 || att2 > 30) {
+                                System.out.print("Invalid! ATT2 must be 0-30: ");
+                                att2 = scanner.nextDouble();
+                            }
+
+                            // Проверка допуска к финалу
+                            if (att1 + att2 <= 29.5) {
+                                System.out.println("Student NOT ADMITTED to final exam!");
+                                System.out.println("ATT1 + ATT2 = " + (att1 + att2) + " <= 29.5");
+                                Mark mark = courseService.putMark(s, ec.getCourse(), att1, att2, 0);
+                                System.out.println("Mark added: " + mark);
+                                db.log(teacher.getFirstName() + " put mark for " + s.getFirstName() + " - NOT ADMITTED");
+                                break;
+                            }
+
+                            // FINAL валидация
                             System.out.print("FINAL (0-40): ");
                             double finalMark = scanner.nextDouble();
+                            while (finalMark < 0 || finalMark > 40) {
+                                System.out.print("Invalid! FINAL must be 0-40: ");
+                                finalMark = scanner.nextDouble();
+                            }
                             scanner.nextLine();
 
                             Mark mark = courseService.putMark(s, ec.getCourse(), att1, att2, finalMark);
                             System.out.println("Mark added: " + mark);
+
+                            // Показываем статус
+                            if (finalMark < 9.5) {
+                                System.out.println("Status: RETAKE — final exam score too low!");
+                            } else if (finalMark < 19.5) {
+                                System.out.println("Status: FX — need to retake final!");
+                            }
+
                             db.log(teacher.getFirstName() + " put mark for " + s.getFirstName());
                         }
                     }
@@ -336,6 +463,67 @@ public class Main {
                     db.getComplaints().add(teacher.getFirstName() +
                             " sent complaint with urgency: " + urgency);
                 }
+                case 7 -> {
+                    System.out.println("Select recipient:");
+                    List<User> users = db.getUsers();
+                    int count = 1;
+                    for (User u : users) {
+                        if (u instanceof Employee && !u.equals(teacher)) {
+                            System.out.println(count++ + ". " + u.getInfo());
+                        }
+                    }
+                    System.out.print("Recipient number: ");
+                    int rNum = scanner.nextInt() - 1;
+                    scanner.nextLine();
+
+                    List<Employee> employees = new ArrayList<>();
+                    for (User u : db.getUsers()) {
+                        if (u instanceof Employee && !u.equals(teacher)) {
+                            employees.add((Employee) u);
+                        }
+                    }
+
+                    System.out.print("Message: ");
+                    String content = scanner.nextLine();
+                    userService.sendMessage(teacher, employees.get(rNum), content);
+                }
+                case 8 -> {
+                    System.out.println("\n=== MY MESSAGES ===");
+                    List<university.models.other.Message> messages =
+                            userService.getMessagesForEmployee(teacher);
+                    if (messages.isEmpty()) {
+                        System.out.println("No messages");
+                    } else {
+                        messages.forEach(System.out::println);
+                    }
+                }
+                case 9 -> {
+                    System.out.println("\n=== AVAILABLE JOURNALS ===");
+                    List<Journal> journals = db.getJournals();
+                    if (journals.isEmpty()) {
+                        System.out.println("No journals available");
+                        break;
+                    }
+                    for (int i = 0; i < journals.size(); i++) {
+                        System.out.println((i + 1) + ". " + journals.get(i));
+                    }
+                    System.out.print("Select journal: ");
+                    int jIndex = scanner.nextInt() - 1;
+                    scanner.nextLine();
+                    newsService.subscribeToJournal(teacher, journals.get(jIndex));
+                    System.out.println("Subscribed to: " + journals.get(jIndex).getName());
+                }
+                case 10 -> {
+                    System.out.println("\n=== MY JOURNALS ===");
+                    boolean found = false;
+                    for (Journal j : db.getJournals()) {
+                        if (j.getSubscribers().contains(teacher)) {
+                            System.out.println(j);
+                            found = true;
+                        }
+                    }
+                    if (!found) System.out.println("No subscriptions yet");
+                }
                 case 0 -> {
                     System.out.println("Logged out!");
                     return;
@@ -359,6 +547,9 @@ public class Main {
             System.out.println("7. Get Top Cited Researcher");
             System.out.println("8. View Employee Requests");
             System.out.println("9. View Complaints");
+            System.out.println("10. Create New Course");
+            System.out.println("11. Send Message");
+            System.out.println("12. View My Messages");
             System.out.println("0. Logout");
             System.out.print("Choice: ");
 
@@ -439,7 +630,7 @@ public class Main {
                         Room room = new Room("101", 30, RoomType.LECTURE_HALL);
                         Schedule schedule = courseService.generateSchedule(
                                 courses.get(cNum), room);
-                        db.getSchedules().add(schedule);
+//                        db.getSchedules().add(schedule);
                         System.out.println("Schedule generated: " + schedule);
                     }
                 }
@@ -468,6 +659,62 @@ public class Main {
                         db.getComplaints().forEach(System.out::println);
                     }
                 }
+                case 10 -> {
+                    System.out.print("Course ID: ");
+                    String courseId = scanner.nextLine();
+                    System.out.print("Course Name: ");
+                    String name = scanner.nextLine();
+                    System.out.print("Credits: ");
+                    int credits = scanner.nextInt();
+                    scanner.nextLine();
+                    System.out.println("Type: 1.MAJOR  2.MINOR  3.FREE_ELECTIVE");
+                    int typeChoice = scanner.nextInt();
+                    scanner.nextLine();
+
+                    CourseType type = switch (typeChoice) {
+                        case 1 -> CourseType.MAJOR;
+                        case 2 -> CourseType.MINOR;
+                        default -> CourseType.FREE_ELECTIVE;
+                    };
+
+                    Course newCourse = courseService.createCourse(courseId, name, credits, type);
+                    System.out.println("Course created: " + newCourse);
+                    db.log(manager.getFirstName() + " created course: " + name);
+                }
+                case 11 -> {
+                    System.out.println("Select recipient:");
+                    List<User> users = db.getUsers();
+                    int count = 1;
+                    for (User u : users) {
+                        if (u instanceof Employee && !u.equals(manager)) {
+                            System.out.println(count++ + ". " + u.getInfo());
+                        }
+                    }
+                    System.out.print("Recipient number: ");
+                    int rNum = scanner.nextInt() - 1;
+                    scanner.nextLine();
+
+                    List<Employee> employees = new ArrayList<>();
+                    for (User u : db.getUsers()) {
+                        if (u instanceof Employee && !u.equals(manager)) {
+                            employees.add((Employee) u);
+                        }
+                    }
+
+                    System.out.print("Message: ");
+                    String content = scanner.nextLine();
+                    userService.sendMessage(manager, employees.get(rNum), content);
+                }
+                case 12 -> {
+                    System.out.println("\n=== MY MESSAGES ===");
+                    List<university.models.other.Message> messages =
+                            userService.getMessagesForEmployee(manager);
+                    if (messages.isEmpty()) {
+                        System.out.println("No messages");
+                    } else {
+                        messages.forEach(System.out::println);
+                    }
+                }
                 case 0 -> {
                     System.out.println("Logged out!");
                     return;
@@ -486,6 +733,8 @@ public class Main {
             System.out.println("2. Add User");
             System.out.println("3. Remove User");
             System.out.println("4. View Logs");
+            System.out.println("5. Send Message");
+            System.out.println("6. View My Messages");
             System.out.println("0. Logout");
             System.out.print("Choice: ");
 
@@ -514,12 +763,11 @@ public class Main {
                     User newUser;
                     int newId = db.getUsers().size() + 1;
                     if (roleChoice == 1) {
-                        newUser = new Student(newId, firstName, lastName,
-                                login, password, Language.EN, 1, "CS");
+                        newUser = UserFactory.createStudent(newId, firstName,
+                                lastName, login, password, 1, "CS");
                     } else {
-                        newUser = new Teacher(newId, firstName, lastName,
-                                login, password, Language.EN, 0, "CS",
-                                TeacherPosition.LECTOR);
+                        newUser = UserFactory.createTeacher(newId, firstName, lastName,
+                                login, password, TeacherPosition.LECTOR);
                     }
                     userService.addUser(newUser);
                     System.out.println("User added: " + newUser.getInfo());
@@ -540,6 +788,39 @@ public class Main {
                         db.getLogs().forEach(System.out::println);
                     }
                 }
+                case 5 -> {
+                    System.out.println("Select recipient:");
+                    List<User> users = db.getUsers();
+                    int count = 1;
+                    for (User u : users) {
+                        if (u instanceof Employee && !u.equals(admin)) {
+                            System.out.println(count++ + ". " + u.getInfo());
+                        }
+                    }
+                    System.out.print("Recipient number: ");
+                    int rNum = scanner.nextInt() - 1;
+                    scanner.nextLine();
+
+                    List<Employee> employees = new ArrayList<>();
+                    for (User u : db.getUsers()) {
+                        if (u instanceof Employee && !u.equals(admin)) {
+                            employees.add((Employee) u);
+                        }
+                    }
+
+                    System.out.print("Message: ");
+                    String content = scanner.nextLine();
+                    userService.sendMessage(admin, employees.get(rNum), content);
+                }
+                case 6 -> {
+                    System.out.println("\n=== MY MESSAGES ===");
+                    List<Message> messages = userService.getMessagesForEmployee(admin);
+                    if (messages.isEmpty()) {
+                        System.out.println("No messages");
+                    } else {
+                        messages.forEach(System.out::println);
+                    }
+                }
                 case 0 -> {
                     System.out.println("Logged out!");
                     return;
@@ -557,6 +838,8 @@ public class Main {
             System.out.println("1. View Requests");
             System.out.println("2. Accept Request");
             System.out.println("3. Reject Request");
+            System.out.println("4. Send Message");
+            System.out.println("5. View My Messages");
             System.out.println("0. Logout");
             System.out.print("Choice: ");
 
@@ -603,6 +886,40 @@ public class Main {
                     techSupportService.rejectRequest(requests.get(rIndex));
                     System.out.println("Request rejected!");
                 }
+                case 4 -> {
+                    System.out.println("Select recipient:");
+                    List<User> users = db.getUsers();
+                    int count = 1;
+                    for (User u : users) {
+                        if (u instanceof Employee && !u.equals(tech)) {
+                            System.out.println(count++ + ". " + u.getInfo());
+                        }
+                    }
+                    System.out.print("Recipient number: ");
+                    int rNum = scanner.nextInt() - 1;
+                    scanner.nextLine();
+
+                    List<Employee> employees = new ArrayList<>();
+                    for (User u : db.getUsers()) {
+                        if (u instanceof Employee && !u.equals(tech)) {
+                            employees.add((Employee) u);
+                        }
+                    }
+
+                    System.out.print("Message: ");
+                    String content = scanner.nextLine();
+                    userService.sendMessage(tech, employees.get(rNum), content);
+                }
+                case 5 -> {
+                    System.out.println("\n=== MY MESSAGES ===");
+                    List<university.models.other.Message> messages =
+                            userService.getMessagesForEmployee(tech);
+                    if (messages.isEmpty()) {
+                        System.out.println("No messages");
+                    } else {
+                        messages.forEach(System.out::println);
+                    }
+                }
                 case 0 -> {
                     System.out.println("Logged out!");
                     return;
@@ -624,6 +941,10 @@ public class Main {
             System.out.println("5. Add Research Paper");
             System.out.println("6. View My Papers");
             System.out.println("7. Calculate H-Index");
+            System.out.println("8. Subscribe to Journal");
+            System.out.println("9. View My Journals");
+            System.out.println("10. Publish Paper in Journal");
+            System.out.println("11. Print Papers (sorted)");
             System.out.println("0. Logout");
             System.out.print("Choice: ");
 
@@ -681,6 +1002,79 @@ public class Main {
                 case 7 -> {
                     int hIndex = researchService.calculateHIndex(gradStudent);
                     System.out.println("Your H-Index: " + hIndex);
+                }
+                case 8 -> {
+                    System.out.println("\n=== AVAILABLE JOURNALS ===");
+                    List<Journal> journals = db.getJournals();
+                    if (journals.isEmpty()) {
+                        System.out.println("No journals available");
+                        break;
+                    }
+                    for (int i = 0; i < journals.size(); i++) {
+                        System.out.println((i + 1) + ". " + journals.get(i));
+                    }
+                    System.out.print("Select journal: ");
+                    int jIndex = scanner.nextInt() - 1;
+                    scanner.nextLine();
+                    newsService.subscribeToJournal(gradStudent, journals.get(jIndex));
+                    System.out.println("Subscribed to: " + journals.get(jIndex).getName());
+                }
+                case 9 -> {
+                    System.out.println("\n=== MY JOURNALS ===");
+                    boolean found = false;
+                    for (Journal j : db.getJournals()) {
+                        if (j.getSubscribers().contains(gradStudent)) {
+                            System.out.println(j);
+                            found = true;
+                        }
+                    }
+                    if (!found) System.out.println("No subscriptions yet");
+                }
+                case 10 -> {
+                    List<ResearchPaper> papers = gradStudent.getPapers();
+                    if (papers.isEmpty()) {
+                        System.out.println("No papers yet!");
+                        break;
+                    }
+                    System.out.println("Select paper:");
+                    for (int i = 0; i < papers.size(); i++) {
+                        System.out.println((i + 1) + ". " + papers.get(i));
+                    }
+                    System.out.print("Paper: ");
+                    int pIndex = scanner.nextInt() - 1;
+                    scanner.nextLine();
+
+                    System.out.println("Select journal:");
+                    List<Journal> journals = db.getJournals();
+                    for (int i = 0; i < journals.size(); i++) {
+                        System.out.println((i + 1) + ". " + journals.get(i));
+                    }
+                    System.out.print("Journal: ");
+                    int jIndex = scanner.nextInt() - 1;
+                    scanner.nextLine();
+
+                    newsService.publishPaperInJournal(
+                            journals.get(jIndex), papers.get(pIndex));
+                    System.out.println("Published! Subscribers notified! (Observer)");
+                }
+                case 11 -> {
+                    System.out.println("Sort by:");
+                    System.out.println("1. Citations");
+                    System.out.println("2. Date");
+                    System.out.println("3. Pages");
+                    System.out.print("Choice: ");
+                    int sortChoice = scanner.nextInt();
+                    scanner.nextLine();
+
+                    Comparator<ResearchPaper> comparator = switch (sortChoice) {
+                        case 1 -> Comparator.comparingInt(ResearchPaper::getCitations).reversed();
+                        case 2 -> Comparator.comparing(ResearchPaper::getDate).reversed();
+                        default -> Comparator.comparingInt(ResearchPaper::getPages).reversed();
+                    };
+
+                    System.out.println("\n=== MY PAPERS (sorted) ===");
+                    researchService.printPapers(gradStudent, comparator);
+                    System.out.println("(Strategy pattern - sorted by your choice)");
                 }
                 case 0 -> {
                     System.out.println("Logged out!");

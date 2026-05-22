@@ -30,6 +30,8 @@ public class DataStorage {
     private List<Message> messages;
     private List<String> logs;
     private List<String> complaints;
+    private List<StudentOrganization> organizations;
+
 
     private DataStorage() {
         users = new ArrayList<>();
@@ -45,6 +47,8 @@ public class DataStorage {
         messages = new ArrayList<>();
         logs = new ArrayList<>();
         complaints = new ArrayList<>();
+        organizations = new ArrayList<>();
+
     }
 
     public static DataStorage getInstance() {
@@ -53,6 +57,8 @@ public class DataStorage {
         }
         return instance;
     }
+
+    public List<StudentOrganization> getOrganizations() { return organizations; }
 
     public List<Researcher> getResearchers() {
         List<Researcher> researchers = new ArrayList<>();

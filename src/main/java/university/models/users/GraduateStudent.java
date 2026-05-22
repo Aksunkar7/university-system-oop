@@ -45,7 +45,9 @@ public class GraduateStudent extends Student implements Researcher {
 
     @Override
     public void printPapers(Comparator<ResearchPaper> c) {
-        // логика в ResearchService
+        List<ResearchPaper> sorted = new ArrayList<>(papers);
+        sorted.sort(c);
+        sorted.forEach(System.out::println);
     }
 
     @Override

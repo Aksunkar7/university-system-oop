@@ -1,24 +1,51 @@
 package university.models.course;
 
 public class Mark {
+    public enum MarkStatus {
+        PASS, FAIL, FX, RETAKE, NOT_ADMITTED
+    }
 
     private double firstAttestation;
     private double secondAttestation;
     private double finalExam;
     private EnrollmentCourse enrollment;
-
-    public Mark(EnrollmentCourse enrollment, double firstAttestation, double secondAttestation, double finalExam) {
+    private MarkStatus status;
+    public Mark(EnrollmentCourse enrollment, double att1,
+                double att2, double finalExam) {
         this.enrollment = enrollment;
-        this.firstAttestation = firstAttestation;
-        this.secondAttestation = secondAttestation;
+        this.firstAttestation = att1;
+        this.secondAttestation = att2;
         this.finalExam = finalExam;
+        this.status = calculateStatus();
     }
+
+    private MarkStatus calculateStatus() {
+        // проверка допуска к финалу
+        if (firstAttestation + secondAttestation <= 29.5) {
+            return MarkStatus.NOT_ADMITTED;
+        }
+        // проверка финала
+        if (finalExam < 9.5) {
+            return MarkStatus.RETAKE;
+        }
+        if (finalExam < 19.5) {
+            return MarkStatus.FX;
+        }
+        // итоговая проверка
+        double total = getTotal();
+        if (total < 50) return MarkStatus.FAIL;
+        return MarkStatus.PASS;
+    }
+
+    public boolean isPassed() {
+        return status == MarkStatus.PASS;
+    }
+
+    public MarkStatus getStatus() { return status; }
 
     public double getTotal() {
         return firstAttestation + secondAttestation + finalExam;
     }
-
-    public boolean isPassed() { return getTotal() >= 50.0; }
 
     public EnrollmentCourse getEnrollment() { return enrollment; }
     public double getFirstAttestation() { return firstAttestation; }
@@ -36,6 +63,6 @@ public class Mark {
                 ", att2=" + secondAttestation +
                 ", final=" + finalExam +
                 ", total=" + String.format("%.2f", getTotal()) +
-                ", passed=" + isPassed() + "}";
+                ", status=" + status + "}";
     }
 }
